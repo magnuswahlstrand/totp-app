@@ -1,12 +1,11 @@
-import {NumberInput, TextInput, Title, Text, ThemeIcon} from "@mantine/core";
+import {Text, TextInput, Title} from "@mantine/core";
 import {useForm} from '@mantine/form';
-import {Check, CircleCheck, CircleX, FaceId} from 'tabler-icons-react';
-import {totp2} from "../totp/totp";
-import {useEffect} from "react";
+import {CircleCheck, CircleDashed, CircleX} from 'tabler-icons-react';
+import {totp} from "../totp/totp";
+import {QueryClient, useQuery, useQueryClient} from "@tanstack/react-query";
 
 
-export function VerifyOTP() {
-
+export function VerifyOTP(props: { secret: string }) {
     const form = useForm({
         initialValues: {
             otp: ''
@@ -16,42 +15,63 @@ export function VerifyOTP() {
         }
     });
 
-    const verifyOTP = (otp: string) => {
+    const verifyOTP = async () => {
+        const res = await totp(props.secret)
+        console.log(form.values.otp === res)
 
+        return form.values.otp === res
     }
 
-    useEffect(() => {
-        // declare the data fetching function
-        const fetchData = async () => {
-            const data = await totp2("12345678901234567890")
-            console.log(data)
+    const {data, refetch, isLoading, isError} = useQuery(["data"], verifyOTP, {
+        refetchOnWindowFocus: false,
+        enabled: false
+    });
+
+    const retriggerVerifyOTP = (otp: string) => {
+        console.log(otp)
+        refetch();
+    }
+
+
+    const getIcon = () => {
+        if (isLoading)
+            return <CircleDashed size={48} strokeWidth={2} color={'lightgray'} />
+        if (isError || data === false)
+            return <CircleX size={48} strokeWidth={2} color={'red'}/>
+        return <CircleCheck size={48} strokeWidth={2} color={'#2d8647'}/>
+    }
+
+    const icon = getIcon()
+
+    const resetQuery = () => {
+        if (typeof data === "boolean") {
+            queryClient.resetQueries(['data'])
         }
+    }
 
-        // call the function
-        fetchData()
-            // make sure to catch any error
-            .catch(console.error);
-    }, [])
 
+        const queryClient = useQueryClient()
     return (
         <>
             <Title order={4} pb="sm">2. Enter the code 6 digit code from your app</Title>
-            <form onSubmit={form.onSubmit((values) => verifyOTP(values.otp))}>
+            <form
+                onSubmit={form.onSubmit((values) => retriggerVerifyOTP(values.otp))}
+                onChange={resetQuery}
+            >
                 <TextInput
                     maxLength={6}
-                    onChange={() => form.validate()}
-                        placeholder="123456"
+                    onChange={() => {
+                        console.log('hej')
+                        queryClient.resetQueries(['data'])
+                    } }
+                    placeholder="123456"
                     radius="xl"
                     size="xl"
                     pl={"xl"}
                     // hideControls
                     styles={{input: {width: 170, textAlign: 'center'}}}
                     {...form.getInputProps('otp')}
-                    icon={<CircleX
-                        size={48}
-                        strokeWidth={2}
-                        color={'#2d8647'}
-                    />}
+                    icon={icon}
                 />
 
 
