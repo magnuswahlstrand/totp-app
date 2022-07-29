@@ -67,7 +67,6 @@ export function VerifyOTP(props: { secret: string }) {
                     placeholder="123456"
                     radius="xl"
                     size="xl"
-                    pl={"xl"}
                     // hideControls
                     styles={{input: {width: 170, textAlign: 'center'}}}
                     {...form.getInputProps('otp')}
