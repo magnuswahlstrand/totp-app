@@ -6,7 +6,7 @@ import {Copy, Edit} from "tabler-icons-react";
 export function CopyCodeButton(props: { code: string }) {
     const clipboard = useClipboard({timeout: 500});
     return (
-        <Tooltip label="Copy the secret code to enter manually to your app.">
+        <Tooltip label="Edit QR code issuer, user or code.">
             <ActionIcon
                 color={'gray'}
                 variant={clipboard.copied ? 'filled' : 'subtle'}
