@@ -1,24 +1,11 @@
 import {ActionIcon, Box, Group, Stack, Text, Title, Tooltip} from "@mantine/core";
-import {useClipboard} from "@mantine/hooks";
 import QRCodeSVG from "qrcode.react";
-import {Copy, Edit} from "tabler-icons-react";
-
-export function CopyCodeButton(props: { code: string }) {
-    const clipboard = useClipboard({timeout: 500});
-    return (
-        <Tooltip label="Edit QR code issuer, user or code.">
-            <ActionIcon
-                color={'gray'}
-                variant={clipboard.copied ? 'filled' : 'subtle'}
-                onClick={() => clipboard.copy(props.code)}>
-                <Copy/>
-            </ActionIcon>
-        </Tooltip>)
-}
+import {Edit} from "tabler-icons-react";
+import {CopyCodeButton} from "./CopyCodeButton";
 
 export function EditButton(props: { onClick: () => void }) {
     return (
-        <Tooltip label="Copy the secret code to enter manually to your app.">
+        <Tooltip label="Edit QR code issuer, user or code.">
             <ActionIcon
                 color={'gray'}
                 onClick={props.onClick}
@@ -29,7 +16,7 @@ export function EditButton(props: { onClick: () => void }) {
 }
 
 
-export function EnrollDevice(props: { url: string, code: string, onEditClicked: () => void }) {
+export function EnrollDevice(props: { url: string, encodedSecret: string, onEditClicked: () => void }) {
     return (
         <>
             <Stack>
@@ -41,7 +28,7 @@ export function EnrollDevice(props: { url: string, code: string, onEditClicked: 
                     </Box>
                     <Stack>
                         <EditButton onClick={props.onEditClicked}/>
-                        <CopyCodeButton code={props.code}/>
+                        <CopyCodeButton code={props.encodedSecret}/>
                     </Stack>
                 </Group>
             </Stack>

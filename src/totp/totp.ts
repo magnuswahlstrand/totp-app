@@ -38,7 +38,10 @@ export async function totp(secret: string, time_step = 30, digits = 6) {
     return hotp(secret, counter, digits)
 }
 
-export function generate_url(issuer: string, user: string, secret: string) {
-    const secretEncoded = base32.encode(secret)
-    return `otpauth://totp/${issuer}:${user}?secret=${secretEncoded}&issuer=${issuer}`;
+export function encodeSecretAndGenerateURL(issuer: string, user: string, secret: string) {
+    const encodedSecret = base32.encode(secret)
+    return {
+        encodedSecret: encodedSecret,
+        url: `otpauth://totp/${issuer}:${user}?secret=${encodedSecret}&issuer=${issuer}`
+    }
 }
